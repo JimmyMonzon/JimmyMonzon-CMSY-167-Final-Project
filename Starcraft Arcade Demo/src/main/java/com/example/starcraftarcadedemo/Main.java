@@ -37,13 +37,7 @@ public class Main extends Application {
         Scene mainScene = new Scene(root);
         stage.setScene(mainScene);
 
-        Image bgi;
-        try {
-            FileInputStream mapStream = new FileInputStream("map.Jpeg");
-            bgi = new Image(mapStream);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        Image bgi = createImgUrl("map.Jpeg");
         mainScene.setFill(new ImagePattern(bgi, 0, 0, 1, 1, true));
 
         Canvas canvas = new Canvas(512, 512);
@@ -75,36 +69,16 @@ public class Main extends Application {
         gc.setStroke(Color.BLACK);
         gc.setLineWidth(1);
 
-        Image marineImg;
-        Image droneImg;
-        Image medicImg;
+        //Gets images for sprites
+
+        Image marineImg = createImgUrl("marine.Png");
+        Image droneImg = createImgUrl("zerg drone.Png");
+        Image medicImg = createImgUrl("medic.Png");
 
         //Collections
 
         ArrayList<Sprite> droneList = new ArrayList<>();
         ArrayList<Sprite> medicList = new ArrayList<>();
-
-
-        try {
-            FileInputStream marineStream = new FileInputStream("marine.Png");
-            marineImg = new Image(marineStream);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            FileInputStream droneStream = new FileInputStream("zerg drone.Png");
-            droneImg = new Image(droneStream);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        try {
-            FileInputStream medicStream = new FileInputStream("medic.Png");
-            medicImg = new Image(medicStream);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
 
         Sprite marine = new Sprite();
         marine.setImage(marineImg);
@@ -210,5 +184,18 @@ public class Main extends Application {
         double y = 350 * Math.random() + 50;
         npc.setPosition(x, y);
         npcList.add(npc);
+    }
+
+    private Image createImgUrl(String fileName){
+        Image img;
+
+        try {
+            FileInputStream fileStream = new FileInputStream(fileName);
+            img = new Image(fileStream);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return img;
     }
 }
