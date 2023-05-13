@@ -107,15 +107,14 @@ public class Main extends Application {
             createNPCs(medicImg, medicList);
         }
 
-        LongValue lastTime = new LongValue( System.nanoTime() );
-        IntValue score = new IntValue(0);
-
         new AnimationTimer() {
+            long lastTime = ( System.nanoTime() );
+            int score = 0;
             public void handle(long currentTime) {
 
                 // calculate time since last update.
-                double elapsedTime = (currentTime - lastTime.value) / 1000000000.0;
-                lastTime.value = currentTime;
+                double elapsedTime = (currentTime - lastTime) / 1000000000.0;
+                lastTime = currentTime;
 
                 // game logic
 
@@ -138,7 +137,7 @@ public class Main extends Application {
                     Sprite zergDrone = droneIter.next();
                     if (marine.intersects(zergDrone)) {
                         droneIter.remove();
-                        score.value++;
+                        score++;
                     }
                 }
 
@@ -147,7 +146,7 @@ public class Main extends Application {
                     Sprite medic = medicIter.next();
                     if (marine.intersects(medic)) {
                         medicIter.remove();
-                        score.value--;
+                        score--;
                     }
                 }
 
@@ -162,7 +161,7 @@ public class Main extends Application {
                 for (Sprite medic : medicList)
                     medic.render(gc);
 
-                String pointsText = "Score: " + (100 * score.value);
+                String pointsText = "Score: " + (100 * score);
                 gc.fillText(pointsText, 360, 36);
                 gc.strokeText(pointsText, 360, 36);
             }
