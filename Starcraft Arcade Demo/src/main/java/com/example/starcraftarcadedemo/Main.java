@@ -95,6 +95,7 @@ public class Main extends Application {
         new AnimationTimer() {
             long lastTime = ( System.nanoTime() );
             int score = 0;
+            final Path scoreFilePath = Paths.get("score.txt");
             public void handle(long currentTime) {
 
                 // calculate time since last update.
@@ -146,15 +147,13 @@ public class Main extends Application {
                 for (Sprite medic : medicList)
                     medic.render(gc);
 
-                Path scoreFilePath = Paths.get("score.txt");
-
                 try {
                     Scanner inputFileScanner = new Scanner(scoreFilePath);
                     String line = inputFileScanner.nextLine();
 
                     String pointsText = "record: " + (line);
-                    gc.fillText(pointsText, 0, 36);
-                    gc.strokeText(pointsText, 0, 36);
+                    gc.fillText(pointsText, 40, 36);
+                    gc.strokeText(pointsText, 40, 36);
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -164,14 +163,13 @@ public class Main extends Application {
                 gc.fillText(pointsText, 360, 36);
                 gc.strokeText(pointsText, 360, 36);
 
-                try(Formatter frmt = new Formatter(scoreFilePath.toFile())) {
-                    frmt.format(String.valueOf(score *100));
-
-                } catch (FileNotFoundException ex) {
-                    throw new RuntimeException(ex);
+                try (Formatter frmt = new Formatter(scoreFilePath.toFile())) {
+                    frmt.format(String.valueOf(score*100));
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
-
             }
+
         }.start();
 
         stage.show();
