@@ -8,16 +8,20 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.CycleMethod;
-import javafx.scene.paint.RadialGradient;
-import javafx.scene.paint.Stop;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Iterator;
+import java.util.Scanner;
 //leveraging external libraries, JavaFx
 
 public class Main extends Application {
@@ -33,16 +37,21 @@ public class Main extends Application {
         Scene mainScene = new Scene(root);
         stage.setScene(mainScene);
 
-        mainScene.setFill(new RadialGradient(
-                0, 0, 0, 0, 1, true,
-                CycleMethod.NO_CYCLE,
-                new Stop(0, Color.web("#81c483")),
-                new Stop(1, Color.web("#fcc200"))));
+        Image bgi;
+        try {
+            FileInputStream mapStream = new FileInputStream("map.Jpeg");
+            bgi = new Image(mapStream);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        mainScene.setFill(new ImagePattern(bgi, 0, 0, 1, 1, true));
 
         Canvas canvas = new Canvas(512, 512);
         root.getChildren().add(canvas);
 
         ArrayList<String> input = new ArrayList<>();
+
+        //lambdas
 
         mainScene.setOnKeyPressed(
                 e -> {
@@ -56,7 +65,7 @@ public class Main extends Application {
                     String code = e.getCode().toString();
                     input.remove( code );
                 });
-        //lambdas
+
 
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -70,9 +79,11 @@ public class Main extends Application {
         Image droneImg;
         Image medicImg;
 
+        //Collections
+
         ArrayList<Sprite> droneList = new ArrayList<>();
         ArrayList<Sprite> medicList = new ArrayList<>();
-        //Collections
+
 
         try {
             FileInputStream marineStream = new FileInputStream("marine.Png");
@@ -161,9 +172,31 @@ public class Main extends Application {
                 for (Sprite medic : medicList)
                     medic.render(gc);
 
+                Path scoreFilePath = Paths.get("score.txt");
+
+                try {
+                    Scanner inputFileScanner = new Scanner(scoreFilePath);
+                    String line = inputFileScanner.nextLine();
+
+                    String pointsText = "record: " + (line);
+                    gc.fillText(pointsText, 0, 36);
+                    gc.strokeText(pointsText, 0, 36);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
                 String pointsText = "Score: " + (100 * score);
                 gc.fillText(pointsText, 360, 36);
                 gc.strokeText(pointsText, 360, 36);
+
+                try(Formatter frmt = new Formatter(scoreFilePath.toFile())) {
+                    frmt.format(String.valueOf(score *100));
+
+                } catch (FileNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             }
         }.start();
 
